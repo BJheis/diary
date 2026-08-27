@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>017 · 心情随记</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0d0d20;
+      color: #ddd;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+      background: #17172e;
+      border-radius: 36px;
+      padding: 28px 22px 34px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      color: #f0e6c0;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h1 small {
+      font-size: 14px;
+      color: #768fa8;
+      font-weight: 300;
+    }
+
+    /* 预设颜色选择器 ———— 紧凑型：点击展开色板 */
+    .color-preset {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      background: #121225;
+      border-radius: 24px;
+      border: 1px solid #282842;
+      align-items: center;
+    }
+
+    .color-preset .label {
+      font-size: 13px;
+      color: #8a9aaa;
+      margin-right: 4px;
+      width: 100%;
+    }
+
+    .color-preset .mood-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #1a1a32;
+      padding: 4px 12px 4px 8px;
+      border-radius: 40px;
+      border: 1px solid #2a2a44;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .color-preset .mood-group .mood-label {
+      font-size: 13px;
+      color: #c8d0dc;
+      margin-right: 2px;
+      user-select: none;
+    }
+
+    .color-preset .mood-group .selected-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #2e2e4a;
+      flex-shrink: 0;
+      transition: 0.15s;
+    }
+
+    .color-preset .mood-group .selected-swatch:hover {
+      transform: scale(1.05);
+    }
+
+    /* 下拉色板 */
+    .color-preset .mood-group .swatch-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f1f3a;
+      border: 1px solid #3a3a5a;
+      border-radius: 20px;
+      padding: 8px 10px;
+      gap: 6px;
+      flex-wrap: wrap;
+      width: 130px;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      justify-content: center;
+    }
+
+    .color-preset .mood-group .swatch-dropdown.open {
+      display: flex;
+    }
+
+    .color-preset .mood-group .swatch-dropdown .color-swatch {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #2e2e4a;
+      cursor: pointer;
+      transition: 0.15s;
+      flex-shrink: 0;
+    }
+
+    .color-preset .mood-group .swatch-dropdown .color-swatch:hover {
+      transform: scale(1.12);
+      border-color: #b8a080;
+    }
+
+    .color-preset .mood-group .swatch-dropdown .color-swatch.active {
+      border-color: #f0e6c0;
+      box-shadow: 0 0 0 2px #0d0d20, 0 0 0 4px #b8a080;
+    }
+
+    .color-preset .custom-group {
+      display: none;
+    }
+
+    .input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .input-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .input-row input,
+    .input-row select {
+      flex: 1 1 140px;
+      padding: 10px 14px;
+      border-radius: 40px;
+      border: 1px solid #2e2e4a;
+      background: #1f1f38;
+      color: #ddd;
+      font-size: 14px;
+      outline: none;
+      transition: 0.25s;
+    }
+
+    .input-row input:focus,
+    .input-row select:focus {
+      border-color: #b8a080;
+      box-shadow: 0 0 0 3px rgba(184, 160, 128, 0.15);
+    }
+
+    .input-row input::placeholder {
+      color: #9090ad;
+    }
+
+    .input-row select option {
+      background: #1f1f38;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-group button {
+      padding: 10px 22px;
+      border-radius: 40px;
+      border: none;
+      background: #2e2e4e;
+      color: #ddd;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      flex: 1 1 auto;
+    }
+
+    .btn-group button:hover {
+      background: #3e3e5e;
+      color: #fff;
+    }
+
+    .btn-group .primary {
+      background: #ffeca5;
+      color: #0d0d20;
+    }
+
+    .btn-group .primary:hover {
+      background: #ffdc5e;
+      color: #0d0d20;
+    }
+
+    .search-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 14px;
+      padding: 12px 14px;
+      background: #121225;
+      border-radius: 28px;
+      border: 1px solid #282842;
+      align-items: center;
+    }
+
+    .search-area input,
+    .search-area select {
+      flex: 1 1 110px;
+      padding: 8px 14px;
+      border-radius: 30px;
+      border: 1px solid #2e2e4a;
+      background: #1a1a32;
+      color: #ddd;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-area input::placeholder {
+      color: #9090ad;
+    }
+
+    .search-area input:focus,
+    .search-area select:focus {
+      border-color: #b8a080;
+    }
+
+    .search-area .search-btn {
+      flex: 0 0 auto;
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: none;
+      background: #2e2e4e;
+      color: #ddd;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 13px;
+    }
+
+    .search-area .search-btn:hover {
+      background: #3e3e5e;
+    }
+
+    .search-area .clear-search {
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      border-radius: 30px;
+      border: 1px solid #3a2a2a;
+      background: transparent;
+      color: #bd7171;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    .search-area .clear-search:hover {
+      border-color: #7a4a4a;
+      color: #c0a0a0;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 14px;
+      font-size: 13px;
+      color: #8a9aaa;
+      padding: 8px 6px 12px;
+      border-bottom: 1px solid #282842;
+      margin-bottom: 12px;
+    }
+
+    .stats span {
+      display: inline-block;
+    }
+
+    .stats .count {
+      color: #e0d8c0;
+      font-weight: 400;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .list::-webkit-scrollbar-thumb {
+      background: #3a3a5a;
+      border-radius: 10px;
+    }
+
+    .entry {
+      background: #1a1a34;
+      border-radius: 20px;
+      padding: 14px 18px;
+      border-left: 6px solid #4a4a6a;
+      transition: 0.15s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      word-break: break-word;
+    }
+
+    .entry .meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #7a8a9a;
+      margin-bottom: 2px;
+    }
+
+    .entry .meta .date {
+      letter-spacing: 0.5px;
+    }
+
+    .entry .mood-tag {
+      font-size: 12px;
+      background: #28284a;
+      padding: 2px 12px;
+      border-radius: 30px;
+      color: #c0c8d8;
+    }
+
+    .entry .content {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e8e0d0;
+      padding: 4px 0 2px;
+    }
+
+    .entry .content .highlight {
+      background: #f0d08040;
+      color: #f0d080;
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+
+    .entry .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .entry .actions button {
+      background: transparent;
+      border: none;
+      color: #5a5a7a;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 2px 6px;
+    }
+
+    .entry .actions button:hover {
+      color: #d0a0a0;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #4a5a6a;
+      padding: 40px 10px;
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+
+    .empty-state small {
+      display: block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #3a4a5a;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      border-top: 1px solid #282842;
+      padding-top: 16px;
+    }
+
+    .footer-actions button {
+      background: transparent;
+      border: none;
+      color: #9090d6;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 4px 8px;
+    }
+
+    .footer-actions button:hover {
+      color: #e1e1ff;
+    }
+
+    #customColorRow {
+      display: none;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #121225;
+      padding: 8px 14px;
+      border-radius: 40px;
+      border: 1px solid #2e2e4a;
+    }
+
+    #customColorRow input[type="text"] {
+      flex: 1;
+      min-width: 80px;
+      padding: 8px 14px;
+      border-radius: 50px;
+      border: 1px solid #2e2e4a;
+      background: #1f1f38;
+      color: #ddd;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #customColorRow .custom-swatch-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    #customColorRow .custom-swatch-group .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #2e2e4a;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    #customColorRow .custom-swatch-group .swatch:hover {
+      transform: scale(1.1);
+    }
+
+    #customColorRow .custom-swatch-group .swatch.active {
+      border-color: #f0e6c0;
+      box-shadow: 0 0 0 2px #0d0d20, 0 0 0 4px #b8a080;
+    }
+
+    @media (max-width: 420px) {
+      .container {padding: 18px 14px;}
+      .input-row input,
+      .input-row select {flex: 1 1 100%;}
+      .color-preset .mood-group {padding: 4px 8px;}
+      .color-preset .mood-group .swatch-dropdown {width: 130px;left: 50px;transform: translateX(-50%);}
+      #customColorRow {flex-wrap: wrap;gap: 6px;padding: 8px 10px;border-radius: 30px;}
+      #customColorRow .custom-swatch-group {gap: 4px;flex: 1 1 100%;justify-content: center;}
+      #customColorRow .custom-swatch-group .swatch {width: 30px;height: 30px;flex: 0 0 30px;}
+      #customColorRow input[type="text"] {flex: 1 1 100%;min-width: 100%;}
+      #customColorRow >span{display: none;}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="app">
+    <h1>✦ 随记 <small>017</small></h1>
+
+    <!-- 预设颜色选择器 ———— 点击展开色板，移除自定义组 -->
+    <div class="color-preset" id="colorPresetPanel">
+      <span class="label">🎨 情绪色板（点击色块展开选色）</span>
+
+      <!-- 开心 金色系 -->
+      <div class="mood-group" data-mood="开心">
+        <span class="mood-label">😊</span>
+        <span class="selected-swatch" style="background:#f0e6a0;"></span>
+        <div class="swatch-dropdown">
+          <span class="color-swatch" style="background:#f0e6a0;" data-color="#f0e6a0"></span>
+          <span class="color-swatch" style="background:#fadc49;" data-color="#fadc49"></span>
+          <span class="color-swatch" style="background:#ffb347;" data-color="#ffb347"></span>
+          <span class="color-swatch" style="background:#f4d178;" data-color="#f4d178"></span>
+          <span class="color-swatch" style="background:#e8b830;" data-color="#e8b830"></span>
+          <span class="color-swatch" style="background:#ff8c42;" data-color="#ff8c42"></span>
+
+        </div>
+      </div>
+
+      <!-- 平淡 灰蓝系 -->
+      <div class="mood-group" data-mood="平淡">
+        <span class="mood-label">😐</span>
+        <span class="selected-swatch" style="background: #9bcca4;"></span>
+        <div class="swatch-dropdown">
+          <span class="color-swatch" style="background:#9bcca4;" data-color="#9bcca4"></span>
+          <span class="color-swatch" style="background:#88d475;" data-color="#88d475"></span>
+          <span class="color-swatch" style="background:#19a031;" data-color="#19a031"></span>
+          <span class="color-swatch" style="background:#7a9d82;" data-color="#7a9d82"></span>
+          <span class="color-swatch" style="background:#489c5a;" data-color="#489c5a"></span>
+          <span class="color-swatch" style="background:#166121;" data-color="#166121"></span>
+        </div>
+      </div>
+
+      <!-- 难过 深蓝系 -->
+      <div class="mood-group" data-mood="难过">
+        <span class="mood-label">😢</span>
+        <span class="selected-swatch" style="background:#badbf9;"></span>
+        <div class="swatch-dropdown">
+          <span class="color-swatch" style="background:#badbf9;" data-color="#badbf9"></span>
+          <span class="color-swatch" style="background:#5ba2e5;" data-color="#5ba2e5"></span>
+          <span class="color-swatch" style="background:#2674c1;" data-color="#2674c1"></span>
+          <span class="color-swatch" style="background:#8fb0cc;" data-color="#8fb0cc"></span>
+          <span class="color-swatch" style="background:#467bb1;" data-color="#467bb1"></span>
+          <span class="color-swatch" style="background:#163e69;" data-color="#163e69"></span>
+        </div>
+      </div>
+
+      <!-- 生气 红色系 -->
+      <div class="mood-group" data-mood="生气">
+        <span class="mood-label">😡</span>
+        <span class="selected-swatch" style="background:#eea3a3;"></span>
+        <div class="swatch-dropdown">
+          <span class="color-swatch" style="background:#eea3a3;" data-color="#eea3a3"></span>
+          <span class="color-swatch" style="background:#ea6a6a;" data-color="#ea6a6a"></span>
+          <span class="color-swatch" style="background:#b83333;" data-color="#b83333"></span>
+          <span class="color-swatch" style="background:#d07373;" data-color="#d07373"></span>
+          <span class="color-swatch" style="background:#a74141;" data-color="#a74141"></span>
+          <span class="color-swatch" style="background:#881b1b;" data-color="#881b1b"></span>
+        </div>
+      </div>
+
+      <!-- 心动 粉色系 -->
+      <div class="mood-group" data-mood="心动">
+        <span class="mood-label">💗</span>
+        <span class="selected-swatch" style="background:#ffbacb;"></span>
+        <div class="swatch-dropdown">
+          <span class="color-swatch" style="background:#ffbacb;" data-color="#ffbacb"></span>
+          <span class="color-swatch" style="background:#f986ac;" data-color="#f986ac"></span>
+          <span class="color-swatch" style="background:#f93f7d;" data-color="#f93f7d"></span>
+          <span class="color-swatch" style="background:#d48ba5;" data-color="#d48ba5"></span>
+          <span class="color-swatch" style="background:#da5783;" data-color="#da5783"></span>
+          <span class="color-swatch" style="background:#ba114f;" data-color="#ba114f"></span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <input type="text" id="contentInput" placeholder="今天想记点什么…">
+        <input type="date" id="dateInput">
+        <select id="moodSelect">
+          <option value="开心">开心</option>
+          <option value="平淡">平淡</option>
+          <option value="难过">难过</option>
+          <option value="生气">生气</option>
+          <option value="心动">心动</option>
+          <option value="自定义">自定义</option>
+        </select>
+      </div>
+      <div id="customColorRow">
+        <input type="text" id="customMoodName" placeholder="情绪名称">
+        <span style="font-size:13px; color:#8a9aaa;">颜色</span>
+        <div class="custom-swatch-group" id="customSwatchGroup">
+          <!-- 由 js 动态填充 绿色/紫色/棕色系 -->
+        </div>
+      </div>
+      <div class="btn-group">
+        <button class="primary" id="saveBtn">保存</button>
+        <button id="clearInputBtn">清空输入</button>
+      </div>
+    </div>
+
+    <!-- 搜索区域 -->
+    <div class="search-area">
+      <input type="text" id="searchKeyword" placeholder="关键词…">
+      <input type="date" id="searchDate">
+      <select id="searchMood">
+        <option value="">全部情绪</option>
+        <option value="开心">😊 开心</option>
+        <option value="平淡">😐 平淡</option>
+        <option value="难过">😢 难过</option>
+        <option value="生气">😡 生气</option>
+        <option value="心动">💗 心动</option>
+        <option value="自定义">✨ 自定义</option>
+      </select>
+      <button class="search-btn" id="searchBtn">搜索</button>
+      <button class="clear-search" id="clearSearchBtn">清除</button>
+    </div>
+
+    <div class="stats" id="statsBar">
+      <span>📄 共 <span class="count" id="totalCount">0</span> 条</span>
+      <span>😊 <span class="count" id="happyCount">0</span></span>
+      <span>😐 <span class="count" id="neutralCount">0</span></span>
+      <span>😢 <span class="count" id="sadCount">0</span></span>
+      <span>😡 <span class="count" id="angryCount">0</span></span>
+      <span>💗 <span class="count" id="heartCount">0</span></span>
+    </div>
+
+    <div class="list" id="entryList">
+      <div class="empty-state">还没有记录<br><small>写下今天的心情吧</small></div>
+    </div>
+
+    <div class="footer-actions">
+      <button id="exportJsonBtn">📤 导出 JSON</button>
+      <button id="importJsonBtn">📥 导入 JSON</button>
+      <button id="clearAllBtn" style="color:#b53333;">清空所有</button>
+      <input type="file" id="fileInput" accept=".json" style="display:none;">
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = '017_mood_notes';
+    let notes = [];
+    let currentFilter = { keyword: '', date: '', mood: '' };
+
+    // ---------- 预设颜色配置 (仅预设情绪) ----------
+    const presetColors = {
+      '开心': ['#f0e6a0', '#fadc49', '#ffb347', '#f4d178', '#e8b830', '#ff8c42'],
+      '平淡': ['#9bcca4', '#88d475', '#19a031', '#7a9d82', '#489c5a', '#166121'],
+      '难过': ['#badbf9', '#5ba2e5', '#2674c1', '#8fb0cc', '#467bb1', '#163e69'],
+      '生气': ['#eea3a3', '#ea6a6a', '#b83333', '#d07373', '#a74141', '#881b1b'],
+      '心动': ['#ffbacb', '#f986ac', '#f93f7d', '#d48ba5', '#da5783', '#ba114f'],
+      '自定义': ['#b39ddb', '#9575cd', '#7e57c2', '#b8a080', '#a1887f', '#8a6e5a', '#f5e6d0', '#dce8e0']
+    };
+
+    // 存储每个情绪当前选中的颜色 (默认第一个)
+    let moodSelectedColor = {
+      '开心': '#f0e6a0',
+      '平淡': '#9bcca4',
+      '难过': '#badbf9',
+      '生气': '#eea3a3',
+      '心动': '#ffbacb',
+      '自定义': '#b39ddb'
+    };
+
+    // ---------- 从 localStorage 读取已选颜色 ----------
+    function loadSelectedColors() {
+      try {
+        const saved = localStorage.getItem('mood_selected_colors');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.keys(parsed).forEach(key => {
+            if (moodSelectedColor.hasOwnProperty(key)) {
+              moodSelectedColor[key] = parsed[key];
+            }
+          });
+        }
+      } catch { }
+    }
+
+    function saveSelectedColors() {
+      localStorage.setItem('mood_selected_colors', JSON.stringify(moodSelectedColor));
+    }
+
+    // 获取某情绪当前颜色
+    function getMoodColor(mood, customMood, customColor) {
+      if (mood === '自定义' && customMood && customColor) return customColor;
+      return moodSelectedColor[mood] || '#4a4a6a';
+    }
+
+    // ---------- 存储笔记 ----------
+    function loadNotes() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          notes = JSON.parse(raw);
+          if (!Array.isArray(notes)) notes = [];
+          notes = notes.filter(n => n && typeof n === 'object' && n.content);
+          notes.forEach(n => { if (!n.id) n.id = Date.now() + '_' + Math.random().toString(36).substr(2, 5); });
+        } else notes = [];
+      } catch { notes = []; }
+    }
+
+    function saveNotes() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); }
+
+    // ---------- 渲染 ----------
+    function render() {
+      const list = document.getElementById('entryList');
+      const totalSpan = document.getElementById('totalCount');
+      const happySpan = document.getElementById('happyCount');
+      const neutralSpan = document.getElementById('neutralCount');
+      const sadSpan = document.getElementById('sadCount');
+      const angrySpan = document.getElementById('angryCount');
+      const heartSpan = document.getElementById('heartCount');
+
+      let filtered = notes;
+      if (currentFilter.date) filtered = filtered.filter(n => n.date === currentFilter.date);
+      if (currentFilter.keyword && currentFilter.keyword.trim() !== '') {
+        const kw = currentFilter.keyword.trim().toLowerCase();
+        filtered = filtered.filter(n => n.content.toLowerCase().includes(kw));
+      }
+      if (currentFilter.mood) {
+        const moodToMatch = currentFilter.mood;
+        filtered = filtered.filter(n => {
+          if (moodToMatch === '自定义') return n.mood === '自定义';
+          return n.mood === moodToMatch;
+        });
+      }
+      filtered = [...filtered].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+      const total = notes.length;
+      const counts = { '开心': 0, '平淡': 0, '难过': 0, '生气': 0, '心动': 0 };
+      notes.forEach(n => { if (counts.hasOwnProperty(n.mood)) counts[n.mood]++; });
+
+      totalSpan.textContent = total;
+      happySpan.textContent = counts['开心'] || 0;
+      neutralSpan.textContent = counts['平淡'] || 0;
+      sadSpan.textContent = counts['难过'] || 0;
+      angrySpan.textContent = counts['生气'] || 0;
+      heartSpan.textContent = counts['心动'] || 0;
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="empty-state">没有匹配的记录<br><small>${notes.length === 0 ? '写一条吧' : '试试其他搜索条件'}</small></div>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((n) => {
+        const mood = n.mood || '平淡';
+        const color = getMoodColor(mood, n.customMood, n.customColor);
+        const moodLabel = mood === '自定义' ? (n.customMood || '自定义') : mood;
+        const dateStr = n.date || '未知日期';
+        let contentHtml = n.content;
+        if (currentFilter.keyword && currentFilter.keyword.trim() !== '') {
+          const kw = currentFilter.keyword.trim();
+          const regex = new RegExp(`(${kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          contentHtml = contentHtml.replace(regex, '<span class="highlight">$1</span>');
+        }
+        html += `
+        <div class="entry" style="border-left-color:${color};">
+          <div class="meta">
+            <span class="date">${dateStr}</span>
+            <span class="mood-tag" style="background:${color}40; color:${color};">${moodLabel}</span>
+          </div>
+          <div class="content">${contentHtml}</div>
+          <div class="actions">
+            <button data-id="${n.id}" class="del-btn">删除</button>
+          </div>
+        </div>
+      `;
+      });
+      list.innerHTML = html;
+
+      list.querySelectorAll('.del-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const id = this.dataset.id;
+          const originalIdx = notes.findIndex(n => n.id === id);
+          if (originalIdx === -1) return;
+          if (confirm('确定删除这条记录吗？')) {
+            notes.splice(originalIdx, 1);
+            saveNotes();
+            render();
+          }
+        });
+      });
+    }
+
+    // ---------- 保存新记录 ----------
+    function saveNewNote() {
+      const content = document.getElementById('contentInput').value.trim();
+      const date = document.getElementById('dateInput').value;
+      const mood = document.getElementById('moodSelect').value;
+      if (!content) { alert('请写点什么'); return; }
+      let customMood = '', customColor = '';
+      if (mood === '自定义') {
+        customMood = document.getElementById('customMoodName').value.trim();
+        const activeSwatch = document.querySelector('#customSwatchGroup .swatch.active');
+        customColor = activeSwatch ? activeSwatch.dataset.color : '#6a9a7a';
+        if (!customMood) { alert('请输入自定义情绪名称'); return; }
+      }
+      const dateStr = date || new Date().toISOString().slice(0, 10);
+      notes.push({
+        id: Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        content,
+        date: dateStr,
+        mood,
+        customMood,
+        customColor,
+        timestamp: Date.now(),
+      });
+      saveNotes();
+      document.getElementById('contentInput').value = '';
+      document.getElementById('dateInput').value = '';
+      document.getElementById('moodSelect').value = '开心';
+      document.getElementById('customColorRow').style.display = 'none';
+      document.getElementById('customMoodName').value = '';
+      render();
+    }
+
+    // ---------- 搜索 ----------
+    function applySearch() {
+      currentFilter.keyword = document.getElementById('searchKeyword').value;
+      currentFilter.date = document.getElementById('searchDate').value;
+      currentFilter.mood = document.getElementById('searchMood').value;
+      render();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchKeyword').value = '';
+      document.getElementById('searchDate').value = '';
+      document.getElementById('searchMood').value = '';
+      currentFilter = { keyword: '', date: '', mood: '' };
+      render();
+    }
+
+    // ---------- 导出 / 导入 / 清空 ----------
+    function exportJson() {
+      if (notes.length === 0) { alert('没有记录可导出'); return; }
+      const blob = new Blob([JSON.stringify(notes, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `心情随记_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importJson(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (!Array.isArray(data)) throw new Error('');
+          const valid = data.filter(n => n && typeof n === 'object' && n.content);
+          if (valid.length === 0) { alert('没有有效的记录'); return; }
+
+          // 补全 id
+          valid.forEach(n => {
+            if (!n.id) n.id = Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+          });
+
+          // ----- 生成预览信息 -----
+          const previewCount = Math.min(valid.length, 5);
+          let previewText = `📄 检测到 ${valid.length} 条记录\n\n`;
+          previewText += `📋 预览前 ${previewCount} 条：\n`;
+          previewText += `─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\n`;
+
+          for (let i = 0; i < previewCount; i++) {
+            const n = valid[i];
+            const moodLabel = n.mood === '自定义' ? (n.customMood || '自定义') : n.mood;
+            const dateStr = n.date || '无日期';
+            const contentPreview = n.content.length > 30 ? n.content.slice(0, 30) + '…' : n.content;
+            previewText += `${i + 1}. [${dateStr}] ${moodLabel}：${contentPreview}\n`;
+          }
+
+          if (valid.length > previewCount) {
+            previewText += `\n... 还有 ${valid.length - previewCount} 条未显示`;
+          }
+
+          previewText += `\n─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─\n`;
+          previewText += `📌 当前已有 ${notes.length} 条记录\n`;
+
+          // 使用 confirm 展示完整信息（但 confirm 不支持换行，改用 alert + confirm 两步）
+          alert(previewText);
+
+          // 第二步：确认操作
+          const action = confirm(
+            `🔄 确定要合并导入吗？\n\n` +
+            `📥 待导入：${valid.length} 条\n` +
+            `📂 已存在：${notes.length} 条\n\n` +
+            `✅ 将根据「内容+日期」自动去重，重复记录不会导入\n` +
+            `❌ 点击「取消」则放弃导入`
+          );
+
+          if (!action) {
+            alert('已取消导入');
+            return;
+          }
+
+          // ----- 去重合并逻辑 -----
+          // 构建已有记录的指纹集合 (content + date)
+          const existingFingerprints = new Set();
+          notes.forEach(n => {
+            const fp = `${n.content}|${n.date}`;
+            existingFingerprints.add(fp);
+          });
+
+          // 同时用 id 集合辅助去重（更安全）
+          const existingIds = new Set();
+          notes.forEach(n => {
+            if (n.id) existingIds.add(n.id);
+          });
+
+          let addedCount = 0;
+          let duplicateCount = 0;
+
+          valid.forEach(n => {
+            const fp = `${n.content}|${n.date}`;
+            // 如果 id 已存在 或 内容+日期已存在，则跳过
+            if (existingIds.has(n.id) || existingFingerprints.has(fp)) {
+              duplicateCount++;
+              return;
+            }
+            // 新记录加入
+            notes.push(n);
+            existingIds.add(n.id);
+            existingFingerprints.add(fp);
+            addedCount++;
+          });
+
+          saveNotes();
+          render();
+
+          // 显示导入结果
+          alert(
+            `✅ 导入完成！\n\n` +
+            `✨ 新增：${addedCount} 条\n` +
+            `⏭️ 跳过重复：${duplicateCount} 条\n` +
+            `📂 当前共：${notes.length} 条`
+          );
+
+        } catch (err) {
+          alert('❌ 文件格式错误，请选择正确的 JSON 文件');
+          console.error(err);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function clearAll() {
+      if (notes.length === 0) return;
+      if (confirm('确定要清空所有记录吗？此操作不可撤销。')) {
+        notes = [];
+        saveNotes();
+        render();
+      }
+    }
+
+    // ---------- 初始化色板交互 (点击展开/收起) ----------
+    function initColorPalette() {
+      // 为每个 mood-group 绑定点击切换下拉
+      document.querySelectorAll('.mood-group').forEach(group => {
+        const dropdown = group.querySelector('.swatch-dropdown');
+        const selectedSwatch = group.querySelector('.selected-swatch');
+        // 点击 group 切换下拉
+        group.addEventListener('click', function (e) {
+          e.stopPropagation();
+          // 关闭其他 dropdown
+          document.querySelectorAll('.mood-group .swatch-dropdown').forEach(d => {
+            if (d !== dropdown) d.classList.remove('open');
+          });
+          dropdown.classList.toggle('open');
+        });
+
+        // 点击色块选择颜色
+        dropdown.querySelectorAll('.color-swatch').forEach(sw => {
+          sw.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const color = this.dataset.color;
+            if (!color) return;
+            const mood = group.dataset.mood;
+            if (!mood) return;
+
+            // 更新高亮
+            dropdown.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+
+            // 更新选中色块显示
+            selectedSwatch.style.background = color;
+
+            // 保存颜色
+            moodSelectedColor[mood] = color;
+            saveSelectedColors();
+
+            // 关闭下拉
+            dropdown.classList.remove('open');
+
+            // 重新渲染
+            render();
+          });
+        });
+
+        // 点击 dropdown 内部阻止冒泡，避免误关闭
+        dropdown.addEventListener('click', function (e) {
+          e.stopPropagation();
+        });
+      });
+
+      // 点击其他地方关闭所有下拉
+      document.addEventListener('click', function () {
+        document.querySelectorAll('.mood-group .swatch-dropdown').forEach(d => d.classList.remove('open'));
+      });
+
+      // 恢复选中的高亮和色块显示
+      function restoreSelected() {
+        document.querySelectorAll('.mood-group').forEach(group => {
+          const mood = group.dataset.mood;
+          const selected = moodSelectedColor[mood];
+          if (selected) {
+            const selectedSwatch = group.querySelector('.selected-swatch');
+            if (selectedSwatch) selectedSwatch.style.background = selected;
+            const dropdown = group.querySelector('.swatch-dropdown');
+            if (dropdown) {
+              dropdown.querySelectorAll('.color-swatch').forEach(s => {
+                s.classList.toggle('active', s.dataset.color === selected);
+              });
+            }
+          }
+        });
+      }
+
+      // 构建自定义颜色行 (customColorRow)
+      function buildCustomSwatchRow() {
+        const container = document.getElementById('customSwatchGroup');
+        container.innerHTML = '';
+        const customColors = presetColors['自定义'];
+        customColors.forEach(col => {
+          const sw = document.createElement('span');
+          sw.className = 'swatch';
+          sw.style.background = col;
+          sw.dataset.color = col;
+          sw.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const color = this.dataset.color;
+            container.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+            this.classList.add('active');
+            moodSelectedColor['自定义'] = color;
+            saveSelectedColors();
+            render();
+          });
+          container.appendChild(sw);
+        });
+        // 恢复高亮
+        const selected = moodSelectedColor['自定义'];
+        container.querySelectorAll('.swatch').forEach(s => {
+          s.classList.toggle('active', s.dataset.color === selected);
+        });
+      }
+
+      buildCustomSwatchRow();
+      restoreSelected();
+
+      // 监听自定义情绪显示
+      document.getElementById('moodSelect').addEventListener('change', function () {
+        const show = this.value === '自定义';
+        document.getElementById('customColorRow').style.display = show ? 'flex' : 'none';
+        if (show) {
+          const selected = moodSelectedColor['自定义'];
+          document.querySelectorAll('#customSwatchGroup .swatch').forEach(s => {
+            s.classList.toggle('active', s.dataset.color === selected);
+          });
+        }
+      });
+    }
+
+    // ---------- 初始化 ----------
+    function init() {
+      loadSelectedColors();
+      loadNotes();
+      initColorPalette();
+
+      document.getElementById('saveBtn').addEventListener('click', saveNewNote);
+
+      document.getElementById('clearInputBtn').addEventListener('click', function () {
+        document.getElementById('contentInput').value = '';
+        document.getElementById('dateInput').value = '';
+        document.getElementById('moodSelect').value = '开心';
+        document.getElementById('customColorRow').style.display = 'none';
+        document.getElementById('customMoodName').value = '';
+      });
+
+      document.getElementById('searchBtn').addEventListener('click', applySearch);
+      document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+      document.getElementById('searchKeyword').addEventListener('keydown', e => { if (e.key === 'Enter') applySearch(); });
+      document.getElementById('searchDate').addEventListener('keydown', e => { if (e.key === 'Enter') applySearch(); });
+      document.getElementById('searchMood').addEventListener('change', applySearch);
+
+      document.getElementById('contentInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.shiftKey && document.activeElement === this) {
+          e.preventDefault();
+          saveNewNote();
+        }
+      });
+
+      document.getElementById('exportJsonBtn').addEventListener('click', exportJson);
+      document.getElementById('importJsonBtn').addEventListener('click', function () { document.getElementById('fileInput').click(); });
+      document.getElementById('fileInput').addEventListener('change', function (e) {
+        if (this.files && this.files.length > 0) { importJson(this.files[0]); }
+        this.value = '';
+      });
+      document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+
+      document.getElementById('dateInput').value = new Date().toISOString().slice(0, 10);
+      render();
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
